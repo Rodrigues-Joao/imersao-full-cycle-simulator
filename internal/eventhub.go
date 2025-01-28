@@ -31,7 +31,7 @@ func NewEventHub(mongoClient *mongo.Client, routeService *RouteService, chDriver
 func (eh *EventHub) HandleEvent(msg []byte) error {
 
 	var baseEvent struct {
-		EventName string `json:"eventname"`
+		EventName string `json:"eventName"`
 	}
 	err := json.Unmarshal(msg, &baseEvent)
 	if err != nil {
@@ -42,7 +42,7 @@ func (eh *EventHub) HandleEvent(msg []byte) error {
 	switch baseEvent.EventName {
 	case "RouteCreated":
 		var event RouteCreatedEvent
-		err := json.Unmarshal(msg, &baseEvent)
+		err := json.Unmarshal(msg, &event)
 		if err != nil {
 			return fmt.Errorf("Error unmarshalling event: %w", err)
 
@@ -50,7 +50,7 @@ func (eh *EventHub) HandleEvent(msg []byte) error {
 		return eh.handleRouteCreated(event)
 	case "DeliveryStarted":
 		var event DeliveryStartedEvent
-		err := json.Unmarshal(msg, &baseEvent)
+		err := json.Unmarshal(msg, &event)
 		if err != nil {
 			return fmt.Errorf("Error unmarshalling event: %w", err)
 
@@ -60,11 +60,11 @@ func (eh *EventHub) HandleEvent(msg []byte) error {
 	default:
 		return errors.New("Unknown event")
 	}
-	return nil
 
 }
 
 func (eh *EventHub) handleRouteCreated(event RouteCreatedEvent) error {
+	fmt.Println("handleRouteCreated")
 	freightCalculatedEvent, err := RouteCreatedHandler(&event, eh.routeService)
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (eh *EventHub) handleRouteCreated(event RouteCreatedEvent) error {
 func (eh *EventHub) handleDeliveryStarted(event DeliveryStartedEvent) error {
 	err := DeliveryStartedHandler(&event, eh.routeService, eh.chDriverMoved)
 	if err != nil {
-		return err
+		return fmt.Errorf("handleDeliveryStarted  message: %w", err)
 
 	}
 	go eh.sendDirections() // roda em background (go rotina)
@@ -95,14 +95,10 @@ func (eh *EventHub) sendDirections() {
 	for {
 		select {
 		case movedEvent := <-eh.chDriverMoved:
-			value, err := json.Marshal(movedEvent)
-			if err != nil {
-				return
-			}
+			value, _ := json.Marshal(movedEvent)
 
-			err = eh.simulatorWriter.WriteMessages(context.Background(), kafka.Message{Key: []byte(movedEvent.RouteId),
-				Value: value})
-			if err != nil {
+			if err := eh.simulatorWriter.WriteMessages(context.Background(), kafka.Message{Key: []byte(movedEvent.RouteId),
+				Value: value}); err != nil {
 				return
 
 			}

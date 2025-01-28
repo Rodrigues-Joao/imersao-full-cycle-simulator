@@ -1,9 +1,12 @@
 package internal
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type RouteCreatedEvent struct {
-	EventName  string       `json:"event"`
+	EventName  string       `json:"eventName"`
 	RouteId    string       `json:"id"`
 	Distance   int          `json:"distance"`
 	Directions []Directions `json:"directions"`
@@ -19,7 +22,7 @@ func NewRouteCreatedEvent(routeId string, distance int, directions []Directions)
 }
 
 type FreightCalculatedEvent struct {
-	EventName string  `json:"event"`
+	EventName string  `json:"eventName"`
 	RouteId   string  `json:"routeId"`
 	Amount    float64 `json: "amount"`
 }
@@ -33,7 +36,7 @@ func NewFreightCalculatedEvent(routeId string, amount float64) *FreightCalculate
 }
 
 type DeliveryStartedEvent struct {
-	EventName string `json:"event"`
+	EventName string `json:"eventName"`
 	RouteId   string `json:"routeId"`
 }
 
@@ -45,7 +48,7 @@ func NewDeliveryStartedEvent(routeId string) *DeliveryStartedEvent {
 }
 
 type DriverMovedEvent struct {
-	EventName string  `json:"event"`
+	EventName string  `json:"eventName"`
 	RouteId   string  `json:"routeId"`
 	Lat       float64 `json:"lat"`
 	Lng       float64 `json:"lng"`
@@ -73,16 +76,18 @@ func RouteCreatedHandler(event *RouteCreatedEvent, routeService *RouteService) (
 
 func DeliveryStartedHandler(event *DeliveryStartedEvent, routeService *RouteService, ch chan *DriverMovedEvent) error {
 	route, err := routeService.GetRoute(event.RouteId)
+
+	fmt.Println(route)
 	if err != nil {
 		return err
 	}
-	driverMovedEvent := NewDriverMovedEvent(route.Id, 0, 0)
-	for _, direction := range route.Directions {
-		driverMovedEvent.RouteId = route.Id
-		driverMovedEvent.Lat = direction.Lat
-		driverMovedEvent.Lng = direction.Lng
-		time.Sleep(time.Second)
-		ch <- driverMovedEvent
-	}
+	go func() {
+		for _, direction := range route.Directions {
+			driverMovedEvent := NewDriverMovedEvent(route.Id, direction.Lat, direction.Lng)
+			ch <- driverMovedEvent
+			time.Sleep(time.Second)
+
+		}
+	}()
 	return nil
 }
