@@ -33,9 +33,20 @@ func (fs *FreightService) Calculate(distance int) float64 {
 	return math.Floor((float64(distance)*0.15+.3)*100) / 100
 }
 
+func NewFreightService() *FreightService {
+	return &FreightService{}
+}
+
 type RouteService struct {
 	mongo          *mongo.Client
 	freightService *FreightService
+}
+
+func NewRouteService(mongo *mongo.Client, freightService *FreightService) *RouteService {
+	return &RouteService{
+		mongo:          mongo,
+		freightService: freightService,
+	}
 }
 
 func (rs *RouteService) CreateRoute(route *Route) (*Route, error) {
