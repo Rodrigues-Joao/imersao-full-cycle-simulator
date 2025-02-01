@@ -10,8 +10,8 @@ import (
 )
 
 type Directions struct {
-	Lat float64 `bson: "lat" json:""lat`
-	Lng float64 `bson: "lng" json:""lng`
+	Lat float64 `bson:"lat" json:"lat"`
+	Lng float64 `bson:"lng" json:"lng"`
 }
 type Route struct {
 	Id           string       `bson: "_id" json:"id"`

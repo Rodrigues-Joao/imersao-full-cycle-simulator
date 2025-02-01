@@ -24,7 +24,7 @@ func NewRouteCreatedEvent(routeId string, distance int, directions []Directions)
 type FreightCalculatedEvent struct {
 	EventName string  `json:"eventName"`
 	RouteId   string  `json:"routeId"`
-	Amount    float64 `json: "amount"`
+	Amount    float64 `json:"amount"`
 }
 
 func NewFreightCalculatedEvent(routeId string, amount float64) *FreightCalculatedEvent {
