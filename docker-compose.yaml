@@ -15,23 +15,14 @@ services:
   #     - KAFKA_SIMULATION_TOPIC=simulation
   #     - KAFKA_GROUP_ID=route-group
   #   depends_on:
-<<<<<<< Updated upstream
-  #     - kafka
-  #     - mongo
-=======
   # - kafka
   # - mongo
->>>>>>> Stashed changes
   simulator:
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-<<<<<<< Updated upstream
-      - MONGO_URI=mongodb://root:root@mongo:27017/routes?authSource=admin&directConnection=true
-=======
       - MONGO_URI=mongodb://root:root@mongo:27017/nest?authSource=admin&directConnection=true
->>>>>>> Stashed changes
       - KAFKA_BROKER=kafka:9092
       - KAFKA_ROUTE_TOPIC=route
       - KAFKA_FREIGHT_TOPIC=freight
