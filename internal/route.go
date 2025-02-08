@@ -14,10 +14,10 @@ type Directions struct {
 	Lng float64 `bson:"lng" json:"lng"`
 }
 type Route struct {
-	Id           string       `bson: "_id" json:"id"`
-	Distance     int          `bson: "distance" json:"distance"`
-	Directions   []Directions `bson: "directions" json:"directions"`
-	FreightPrice float64      `bson: "freight_price" json:"freight_price"`
+	Id           string       `bson:"_id" json:"id"`
+	Distance     int          `bson:"distance" json:"distance"`
+	Directions   []Directions `bson:"directions" json:"directions"`
+	FreightPrice float64      `bson:"freight_price" json:"freight_price"`
 }
 
 func NewRoute(id string, distance int, directions []Directions) *Route {

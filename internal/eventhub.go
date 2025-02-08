@@ -83,6 +83,7 @@ func (eh *EventHub) handleRouteCreated(event RouteCreatedEvent) error {
 	return nil
 }
 func (eh *EventHub) handleDeliveryStarted(event DeliveryStartedEvent) error {
+	fmt.Println("handleDeliveryStarted routeid = %s", event.RouteId)
 	err := DeliveryStartedHandler(&event, eh.routeService, eh.chDriverMoved)
 	if err != nil {
 		return fmt.Errorf("handleDeliveryStarted  message: %w", err)

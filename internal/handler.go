@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -77,7 +76,6 @@ func RouteCreatedHandler(event *RouteCreatedEvent, routeService *RouteService) (
 func DeliveryStartedHandler(event *DeliveryStartedEvent, routeService *RouteService, ch chan *DriverMovedEvent) error {
 	route, err := routeService.GetRoute(event.RouteId)
 
-	fmt.Println(route)
 	if err != nil {
 		return err
 	}
